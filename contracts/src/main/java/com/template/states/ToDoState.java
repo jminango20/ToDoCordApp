@@ -6,7 +6,7 @@ package com.template.states;
 // * State *
 // *********
 
-import com.template.contracts.TemplateContract;
+import com.template.contracts.ToDoContract;
 import net.corda.core.contracts.BelongsToContract;
 import net.corda.core.contracts.ContractState;
 import net.corda.core.contracts.LinearState;
@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.List;
 
-@BelongsToContract(TemplateContract.class)
+@BelongsToContract(ToDoContract.class)
 public class ToDoState implements ContractState, LinearState {
 
     private final Party assignedBy;

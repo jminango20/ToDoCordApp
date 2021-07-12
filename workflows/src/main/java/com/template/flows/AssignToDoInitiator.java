@@ -5,7 +5,7 @@ package com.template.flows;
 // ******************
 
 import co.paralleluniverse.fibers.Suspendable;
-import com.template.contracts.DummyToDoCommand;
+import com.template.contracts.Command;
 import com.template.states.ToDoState;
 import net.corda.core.contracts.StateAndRef;
 import net.corda.core.flows.*;
@@ -50,8 +50,11 @@ public class AssignToDoInitiator extends FlowLogic<Void> {
         ToDoState toDoState = currentStateAndRefToDo.getState().getData();
         System.out.println(toDoState.getTaskDescription());
 
+
         Set<Party> parties = sb.getIdentityService().partiesFromName(assignedTo, true);
         Party assignedToParty = parties.iterator().next();
+        System.out.println("Party Encontrada");
+
 
         ToDoState newToDoState = toDoState.assign(assignedToParty);
 
@@ -60,7 +63,7 @@ public class AssignToDoInitiator extends FlowLogic<Void> {
         TransactionBuilder tb = new TransactionBuilder(notary)
                 .addInputState(currentStateAndRefToDo)
                 .addOutputState(newToDoState)
-                .addCommand(new DummyToDoCommand(), myKey, assignedToParty.getOwningKey());
+                .addCommand(new Command.AssignToDoCommand(), myKey, assignedToParty.getOwningKey());
 
         tb.verify(getServiceHub());
         SignedTransaction ptx = getServiceHub().signInitialTransaction(tb);

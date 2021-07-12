@@ -5,7 +5,7 @@ package com.template.flows;
 // ******************
 
 import co.paralleluniverse.fibers.Suspendable;
-import com.template.contracts.DummyToDoCommand;
+import com.template.contracts.Command;
 import com.template.states.ToDoState;
 import net.corda.core.flows.*;
 import net.corda.core.identity.Party;
@@ -33,14 +33,14 @@ public class CreateToDoFlow extends FlowLogic<Void> {
         Party notary = serviceHub.getNetworkMapCache().getNotaryIdentities().get(0);
 
         Party me = getOurIdentity();
-
         ToDoState ts = new ToDoState(me,me,taskDescription);
+        System.out.println("Linear ID do estado es " + ts.getLinearId());
 
         TransactionBuilder tb = new TransactionBuilder(notary);
         tb.addOutputState(ts);
-        tb.addCommand(new DummyToDoCommand(), me.getOwningKey());
+        tb.addCommand(new Command.CreateToDoCommand(), me.getOwningKey());
 
-        SignedTransaction stx = getServiceHub().signInitialTransaction(tb);
+        SignedTransaction stx = serviceHub.signInitialTransaction(tb);
         subFlow(new FinalityFlow(stx, Collections.<FlowSession>emptySet()));
 
         return null;
