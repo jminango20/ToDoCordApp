@@ -4,6 +4,8 @@ import com.template.states.ToDoState;
 import net.corda.core.contracts.Contract;
 import net.corda.core.transactions.LedgerTransaction;
 
+import static net.corda.core.contracts.ContractsDSL.requireThat;
+
 // ************
 // * Contract *
 // ************
@@ -15,9 +17,11 @@ public class ToDoContract implements Contract {
     public void verify(LedgerTransaction tx) {
         System.out.println("O metodo verify() do ToDoContract e chamado");
         ToDoState toDoOutput = (ToDoState) tx.getOutputStates().get(0);
-        if(toDoOutput.getTaskDescription().trim().equals("")) throw new IllegalArgumentException("Tarefa em branco");
-
-
+        requireThat(r -> {
+            r.using("Tarefa em branco.", !toDoOutput.getTaskDescription().trim().equals(""));
+            r.using("Tarefa tem tamanho maior a 25 caracteres", toDoOutput.getTaskDescription().length()<25);
+            return null;
+        });
     }
 
 
